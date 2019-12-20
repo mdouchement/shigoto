@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/containous/yaegi v0.7.1
+	github.com/containous/yaegi v0.7.2
 	github.com/gobs/args v0.0.0-20180315064131-86002b4df18c
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/huandu/xstrings v1.2.1 // indirect
@@ -32,9 +32,9 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
-	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
-	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
+	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915 // indirect
+	golang.org/x/sys v0.0.0-20191219235734-af0d71d358ab // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
-	mvdan.cc/sh/v3 v3.0.0-beta1
+	mvdan.cc/sh/v3 v3.0.0
 )

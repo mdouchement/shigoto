@@ -24,6 +24,8 @@ github.com/containous/yaegi v0.7.0 h1:F9eioOW38BQWrgHiV9CPE8T0emNvjUxRSPKpNJMwHf
 github.com/containous/yaegi v0.7.0/go.mod h1:Yj82MHpXQ9/h3ukzc2numJQ/Wr4+M3C9YLMzNjFtd3o=
 github.com/containous/yaegi v0.7.1 h1:htj8w2BH8h7lRlk2D+CROYnC1zHTAaodXancV8fahLY=
 github.com/containous/yaegi v0.7.1/go.mod h1:Yj82MHpXQ9/h3ukzc2numJQ/Wr4+M3C9YLMzNjFtd3o=
+github.com/containous/yaegi v0.7.2 h1:hnd5zeatznClaAyrL+DxPsJY3MjF6/jf5B0Oy/fEJ5U=
+github.com/containous/yaegi v0.7.2/go.mod h1:Yj82MHpXQ9/h3ukzc2numJQ/Wr4+M3C9YLMzNjFtd3o=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
@@ -188,6 +190,8 @@ golang.org/x/crypto v0.0.0-20191205161847-0a08dada0ff9 h1:abxekknhS/Drh3uoQDk5Hc
 golang.org/x/crypto v0.0.0-20191205161847-0a08dada0ff9/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 h1:ULYEB3JvPRE/IfO+9uO7vKV/xzVTO7XPAwm8xbf4w2g=
 golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
+golang.org/x/crypto v0.0.0-20191219195013-becbf705a915 h1:aJ0ex187qoXrJHPo8ZasVTASQB7llQP6YeNzgDALPRk=
+golang.org/x/crypto v0.0.0-20191219195013-becbf705a915/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20181114220301-adae6a3d119a/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20181201002055-351d144fa1fc h1:a3CU5tJYVj92DY2LaA1kUkrsqD5/3mLDhx2NcNqyW+0=
@@ -219,6 +223,8 @@ golang.org/x/sys v0.0.0-20191204072324-ce4227a45e2e h1:9vRrk9YW2BTzLP0VCB9ZDjU4c
 golang.org/x/sys v0.0.0-20191204072324-ce4227a45e2e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 h1:gSbV7h1NRL2G1xTg/owz62CST1oJBmxy4QpMMregXVQ=
 golang.org/x/sys v0.0.0-20191210023423-ac6580df4449/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20191219235734-af0d71d358ab h1:j8r8g0V3tVdbo274kyTmC+yEsChru2GfvdiV84wm5T8=
+golang.org/x/sys v0.0.0-20191219235734-af0d71d358ab/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=
@@ -245,3 +251,5 @@ gopkg.in/yaml.v2 v2.2.4/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 mvdan.cc/editorconfig v0.1.1-0.20191109213504-890940e3f00e/go.mod h1:Ge4atmRUYqueGppvJ7JNrtqpqokoJEFxYbP0Z+WeKS8=
 mvdan.cc/sh/v3 v3.0.0-beta1 h1:UqiwBEXEPzelaGxuvixaOtzc7WzKtrElePJ8HqvW7K8=
 mvdan.cc/sh/v3 v3.0.0-beta1/go.mod h1:rBIndNJFYPp8xSppiZcGIk6B5d1g3OEARxEaXjPxwVI=
+mvdan.cc/sh/v3 v3.0.0 h1:P9zpJbEogYAPleC8JyrTnibcQ3rH6NhHqXioUZi2HNc=
+mvdan.cc/sh/v3 v3.0.0/go.mod h1:rBIndNJFYPp8xSppiZcGIk6B5d1g3OEARxEaXjPxwVI=
