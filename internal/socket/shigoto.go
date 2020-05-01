@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"net"
-	"os"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -60,10 +59,7 @@ func (s *Socket) Listen(handler func(event []byte) []byte) error {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			if strings.HasSuffix(err.Error(), "use of closed network connection") {
-				return nil // Close has been trigged
-			}
-			return err
+			return s.hide(err)
 		}
 		reader := bufio.NewReader(conn)
 		if event, err := reader.ReadBytes(ControlCharacter); err == nil {
@@ -77,10 +73,21 @@ func (s *Socket) Listen(handler func(event []byte) []byte) error {
 
 // Close closes the listener if Listen as been called.
 func (s *Socket) Close() error {
-	defer os.Remove(s.socket)
-
 	if s.close == nil {
 		return nil
 	}
-	return s.close()
+
+	return s.hide(s.close())
+}
+
+func (s *Socket) hide(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	if strings.HasSuffix(err.Error(), "use of closed network connection") {
+		return nil // Close has been trigged
+	}
+
+	return err
 }

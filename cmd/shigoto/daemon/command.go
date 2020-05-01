@@ -61,6 +61,7 @@ var (
 
 			sock := socket.New(konf.String("socket"))
 			defer sock.Close()
+
 			go func() {
 				err = sock.Listen(func(event []byte) []byte {
 					if bytes.Equal(event, socket.SignalReload) {
@@ -78,8 +79,10 @@ var (
 					return []byte("Unsupported signal")
 				})
 
-				fmt.Println(err)
-				os.Exit(1)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
 			}()
 
 			//
@@ -90,12 +93,12 @@ var (
 				return err
 			}
 			pool.Start()
+			defer pool.Stop()
 
 			signals := make(chan os.Signal, 1)
 			signal.Notify(signals, os.Interrupt, os.Kill)
 			<-signals
 
-			pool.Stop()
 			return nil
 		},
 	}
