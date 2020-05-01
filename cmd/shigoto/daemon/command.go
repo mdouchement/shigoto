@@ -59,9 +59,10 @@ var (
 			//
 			//
 
-			defer os.Remove(konf.String("socket"))
+			sock := socket.New(konf.String("socket"))
+			defer sock.Close()
 			go func() {
-				err = socket.Listen(konf.String("socket"), func(event []byte) []byte {
+				err = sock.Listen(func(event []byte) []byte {
 					if bytes.Equal(event, socket.SignalReload) {
 						log.Info("Reloading daemon")
 
