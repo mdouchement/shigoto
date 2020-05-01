@@ -38,9 +38,14 @@ After=network.target
 
 [Service]
 PIDFile=/run/shigoto.pid
+Restart=on-failure
+KillSignal=SIGINT
+
 ExecStart=/usr/sbin/shigoto daemon
+ExecStartPost=/bin/sh -c '/usr/sbin/pidof shigoto > /run/shigoto.pid'
+
 ExecReload=/usr/sbin/shigoto reload
-ExecStop=/bin/kill -s TERM $MAINPID
+ExecStop=/bin/kill -s INT $MAINPID
 
 [Install]
 WantedBy=multi-user.target
