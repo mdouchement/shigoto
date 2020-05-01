@@ -39,7 +39,7 @@ var (
 				return err
 			}
 
-			payload, err := socket.Request(konf.String("socket"), socket.SignalReload)
+			payload, err := socket.New(konf.String("socket")).Request(socket.SignalReload)
 			if err != nil {
 				return err
 			}

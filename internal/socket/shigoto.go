@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"net"
+	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -15,9 +17,22 @@ const (
 	ControlCharacterString = "\a"
 )
 
+// A Socket is used to send and receive signals through socket.
+type Socket struct {
+	socket string
+	close  func() error
+}
+
+// New returns a new Socket.
+func New(socket string) *Socket {
+	return &Socket{
+		socket: socket,
+	}
+}
+
 // Request dials the socket with the given event.
-func Request(socket string, event []byte) ([]byte, error) {
-	c, err := net.DialUnix("unix", nil, &net.UnixAddr{Name: socket, Net: "unix"})
+func (s *Socket) Request(event []byte) ([]byte, error) {
+	c, err := net.DialUnix("unix", nil, &net.UnixAddr{Name: s.socket, Net: "unix"})
 	if err != nil {
 		return nil, errors.Wrap(err, "could not dial the socket")
 	}
@@ -35,15 +50,19 @@ func Request(socket string, event []byte) ([]byte, error) {
 }
 
 // Listen opens the socket and wait for incoming events.
-func Listen(socket string, handler func(event []byte) []byte) error {
-	ln, err := net.ListenUnix("unix", &net.UnixAddr{Name: socket, Net: "unix"})
+func (s *Socket) Listen(handler func(event []byte) []byte) error {
+	ln, err := net.ListenUnix("unix", &net.UnixAddr{Name: s.socket, Net: "unix"})
 	if err != nil {
 		return errors.Wrap(err, "could not open socket")
 	}
+	s.close = ln.Close
 
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
+			if strings.HasSuffix(err.Error(), "use of closed network connection") {
+				return nil // Close has been trigged
+			}
 			return err
 		}
 		reader := bufio.NewReader(conn)
@@ -54,4 +73,14 @@ func Listen(socket string, handler func(event []byte) []byte) error {
 			_, _ = conn.Write(append(payload, ControlCharacter))
 		}
 	}
+}
+
+// Close closes the listener if Listen as been called.
+func (s *Socket) Close() error {
+	defer os.Remove(s.socket)
+
+	if s.close == nil {
+		return nil
+	}
+	return s.close()
 }
