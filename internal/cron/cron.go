@@ -34,7 +34,12 @@ func (p *Pool) Register(s *shigoto.Shigoto) {
 	defer p.mu.Unlock()
 
 	p.shigoto[s.Name] = s
-	cron := cron.New(cron.WithLogger(cron.PrintfLogger(p.logger)))
+	cron := cron.New(cron.WithLogger(
+		cron.PrintfLogger(p.logger)),
+		cron.WithChain(
+			cron.SkipIfStillRunning(cron.PrintfLogger(p.logger)),
+		),
+	)
 	p.cron[s.Name] = cron
 	for _, baito := range s.Baito {
 		chain := runner.Chain(baito.Commands()...)
