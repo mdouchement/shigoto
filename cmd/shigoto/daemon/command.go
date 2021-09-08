@@ -6,18 +6,18 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/internal/config"
 	"github.com/mdouchement/shigoto/internal/cron"
-	"github.com/mdouchement/shigoto/internal/logger"
 	"github.com/mdouchement/shigoto/internal/socket"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
 
 func init() {
@@ -48,10 +48,11 @@ var (
 			}
 
 			log := logrus.New()
-			log.SetFormatter(&prefixed.TextFormatter{
-				DisableColors:   !konf.Bool("log.force_color"),
-				ForceColors:     konf.Bool("log.force_color"),
-				ForceFormatting: konf.Bool("log.force_formating"),
+			log.SetFormatter(&logger.LogrusTextFormatter{
+				DisableColors:   false,
+				ForceColors:     true,
+				ForceFormatting: true,
+				PrefixRE:        regexp.MustCompile(`^(\[.*?\])\s`),
 				FullTimestamp:   true,
 				TimestampFormat: "2006-01-02 15:04:05",
 			})

@@ -3,7 +3,7 @@ package cron
 import (
 	"path/filepath"
 
-	"github.com/mdouchement/shigoto/pkg/logger"
+	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/pkg/shigoto"
 	"github.com/pkg/errors"
 )

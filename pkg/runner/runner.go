@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/pkg/io"
-	"github.com/mdouchement/shigoto/pkg/logger"
 )
 
 type (

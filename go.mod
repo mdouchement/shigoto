@@ -15,6 +15,7 @@ require (
 	github.com/knadh/koanf v1.2.2
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mdouchement/logger v0.0.0-20200719134033-63d0eda5567d // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/onsi/ginkgo v1.10.3 // indirect
 	github.com/onsi/gomega v1.7.1 // indirect
