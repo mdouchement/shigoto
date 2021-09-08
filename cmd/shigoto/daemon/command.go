@@ -49,9 +49,9 @@ var (
 
 			log := logrus.New()
 			log.SetFormatter(&logger.LogrusTextFormatter{
-				DisableColors:   false,
-				ForceColors:     true,
-				ForceFormatting: true,
+				DisableColors:   !konf.Bool("log.force_color"),
+				ForceColors:     konf.Bool("log.force_color"),
+				ForceFormatting: konf.Bool("log.force_formating"),
 				PrefixRE:        regexp.MustCompile(`^(\[.*?\])\s`),
 				FullTimestamp:   true,
 				TimestampFormat: "2006-01-02 15:04:05",
