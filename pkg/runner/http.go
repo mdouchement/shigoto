@@ -143,7 +143,7 @@ func init() {
 		// Retry
 		config := retry.Config{}
 		if v, ok := payload["retry"]; ok {
-			times, ok := v.(float64)
+			times, ok := v.(int)
 			if !ok {
 				return nil, errors.New("taskfile: http: retry must be an integer")
 			}
