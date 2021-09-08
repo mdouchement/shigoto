@@ -155,8 +155,8 @@ shigoto:
 
 ### 1.2.4. Yaegi
 
-[Yaegi](https://github.com/containous/yaegi) allows to write Golang scripts.
-Special import is `logger` that use the Shigoto [logger](https://godoc.org/github.com/mdouchement/shigoto/pkg/logger#Logger).
+[Yaegi](https://github.com/traefik/yaegi) allows to write Golang scripts.
+Special import is `logger` that use the Shigoto [logger](https://godoc.org/github.com/mdouchement/logger#Logger).
 
 - Supports global/local templating variables as source.
 - Supports host/global/local envrironment variables as source.
@@ -166,6 +166,12 @@ shigoto:
   baito_yaegi:
     schedule: "@every 5s"
     commands:
+      # Run a golang file compatible with Yaegi.
+      - yaegi: $HOME/main.go
+        # IgnoreError allows errors and continue to the next command.
+        # (default: false)
+        ignore_error: true
+      # Declare Golang source code directly.
       - yaegi: |
           package main
 

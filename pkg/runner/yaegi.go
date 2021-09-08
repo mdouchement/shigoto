@@ -1,12 +1,15 @@
 package runner
 
 import (
+	"os"
 	"reflect"
+	"strings"
 	"time"
 
-	"github.com/containous/yaegi/interp"
-	"github.com/containous/yaegi/stdlib"
 	"github.com/pkg/errors"
+	"github.com/traefik/yaegi/interp"
+	"github.com/traefik/yaegi/stdlib"
+	"github.com/traefik/yaegi/stdlib/unrestricted"
 )
 
 type yaegi struct {
@@ -32,15 +35,36 @@ func (r *yaegi) Run() {
 	}
 
 	i := interp.New(interp.Options{})
+	// i.Use(syscall.Symbols)
+	// i.Use(unsafe.Symbols)
 	i.Use(stdlib.Symbols)
+	i.Use(unrestricted.Symbols)
 	i.Use(interp.Exports{
-		"logger": {
-			"WithField": reflect.ValueOf(r.log.WithField),
-			"Printf":    reflect.ValueOf(r.log.Printf),
-			"Info":      reflect.ValueOf(r.log.Info),
-			"Infof":     reflect.ValueOf(r.log.Infof),
-			"Error":     reflect.ValueOf(r.log.Error),
-			"Errorf":    reflect.ValueOf(r.log.Errorf),
+		"logger/logger": { // Use as `import "logger"`
+			"WithPrefix":  reflect.ValueOf(r.log.WithPrefix),
+			"WithPrefixf": reflect.ValueOf(r.log.WithPrefixf),
+			"WithField":   reflect.ValueOf(r.log.WithField),
+			"WithError":   reflect.ValueOf(r.log.WithError),
+			"WithFields":  reflect.ValueOf(r.log.WithFields),
+			//
+			"Debug":  reflect.ValueOf(r.log.Debug),
+			"Debugf": reflect.ValueOf(r.log.Debugf),
+			"Info":   reflect.ValueOf(r.log.Info),
+			"Infof":  reflect.ValueOf(r.log.Infof),
+			"Warn":   reflect.ValueOf(r.log.Warn),
+			"Warnf":  reflect.ValueOf(r.log.Warnf),
+			"Error":  reflect.ValueOf(r.log.Error),
+			"Errorf": reflect.ValueOf(r.log.Errorf),
+			//
+			"Print":   reflect.ValueOf(r.log.Print),
+			"Printf":  reflect.ValueOf(r.log.Printf),
+			"Println": reflect.ValueOf(r.log.Println),
+			"Fatal":   reflect.ValueOf(r.log.Fatal),
+			"Fatalf":  reflect.ValueOf(r.log.Fatalf),
+			"Fatalln": reflect.ValueOf(r.log.Fatalln),
+			"Panic":   reflect.ValueOf(r.log.Panic),
+			"Panicf":  reflect.ValueOf(r.log.Panicf),
+			"Panicln": reflect.ValueOf(r.log.Panicln),
 		},
 	})
 
@@ -70,6 +94,16 @@ func init() {
 		if !ok {
 			return nil, errors.New("taskfile: yaegi: src must be a string")
 		}
+
+		// Check if src is a file and not plain code.
+		if strings.HasSuffix(strings.TrimSpace(executor.src), ".go") {
+			src, err := os.ReadFile(executor.ctx.ExpandAll(executor.src))
+			if err != nil {
+				return nil, errors.Wrap(err, "taskfile: yaegi: file")
+			}
+			executor.src = string(src)
+		}
+
 		executor.src = executor.ctx.ExpandAll(executor.src)
 
 		// Ignore error

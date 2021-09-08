@@ -3,7 +3,7 @@ package cron
 import (
 	"sync"
 
-	"github.com/mdouchement/shigoto/pkg/logger"
+	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/pkg/runner"
 	"github.com/mdouchement/shigoto/pkg/shigoto"
 	"github.com/robfig/cron/v3"

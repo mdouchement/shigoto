@@ -6,18 +6,18 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/internal/config"
 	"github.com/mdouchement/shigoto/internal/cron"
-	"github.com/mdouchement/shigoto/internal/logger"
 	"github.com/mdouchement/shigoto/internal/socket"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
 
 func init() {
@@ -30,8 +30,9 @@ var (
 		Use:   "daemon",
 		Short: "Start Shigoto service",
 		Args:  cobra.NoArgs,
-		RunE: func(c *cobra.Command, _ []string) (err error) {
+		RunE: func(c *cobra.Command, _ []string) error {
 			if cfg == "" {
+				var err error
 				cfg, err = config.Lookup(config.Filenames...)
 				if err != nil {
 					if err == os.ErrNotExist {
@@ -47,10 +48,11 @@ var (
 			}
 
 			log := logrus.New()
-			log.SetFormatter(&prefixed.TextFormatter{
+			log.SetFormatter(&logger.LogrusTextFormatter{
 				DisableColors:   !konf.Bool("log.force_color"),
 				ForceColors:     konf.Bool("log.force_color"),
 				ForceFormatting: konf.Bool("log.force_formating"),
+				PrefixRE:        regexp.MustCompile(`^(\[.*?\])\s`),
 				FullTimestamp:   true,
 				TimestampFormat: "2006-01-02 15:04:05",
 			})
@@ -63,7 +65,7 @@ var (
 			defer sock.Close()
 
 			go func() {
-				err = sock.Listen(func(event []byte) []byte {
+				err := sock.Listen(func(event []byte) []byte {
 					if bytes.Equal(event, socket.SignalReload) {
 						log.Info("Reloading daemon")
 
@@ -88,7 +90,7 @@ var (
 			//
 			//
 
-			err = cron.Load(filepath.Join(konf.String("directory")), pool, logger.WrapLogrus(log))
+			err := cron.Load(filepath.Join(konf.String("directory")), pool, logger.WrapLogrus(log))
 			if err != nil {
 				return err
 			}

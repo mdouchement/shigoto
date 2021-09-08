@@ -3,7 +3,7 @@ package runner
 import (
 	"sync"
 
-	"github.com/mdouchement/shigoto/pkg/logger"
+	"github.com/mdouchement/logger"
 )
 
 type base struct {
