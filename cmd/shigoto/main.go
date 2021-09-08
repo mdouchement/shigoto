@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"runtime"
 
 	"github.com/mdouchement/shigoto/cmd/shigoto/daemon"
 	"github.com/mdouchement/shigoto/cmd/shigoto/reload"
@@ -20,7 +21,7 @@ func main() {
 	c := &cobra.Command{
 		Use:     "shigoto",
 		Short:   "Shigoto, a nextgen crontab",
-		Version: fmt.Sprintf("%s - build %.7s @ %s", version, revision, date),
+		Version: fmt.Sprintf("%s - build %.7s @ %s - %s", version, revision, date, runtime.Version()),
 		Args:    cobra.NoArgs,
 	}
 	c.AddCommand(daemon.Command)

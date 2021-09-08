@@ -30,8 +30,9 @@ var (
 		Use:   "daemon",
 		Short: "Start Shigoto service",
 		Args:  cobra.NoArgs,
-		RunE: func(c *cobra.Command, _ []string) (err error) {
+		RunE: func(c *cobra.Command, _ []string) error {
 			if cfg == "" {
+				var err error
 				cfg, err = config.Lookup(config.Filenames...)
 				if err != nil {
 					if err == os.ErrNotExist {
@@ -63,7 +64,7 @@ var (
 			defer sock.Close()
 
 			go func() {
-				err = sock.Listen(func(event []byte) []byte {
+				err := sock.Listen(func(event []byte) []byte {
 					if bytes.Equal(event, socket.SignalReload) {
 						log.Info("Reloading daemon")
 
@@ -88,7 +89,7 @@ var (
 			//
 			//
 
-			err = cron.Load(filepath.Join(konf.String("directory")), pool, logger.WrapLogrus(log))
+			err := cron.Load(filepath.Join(konf.String("directory")), pool, logger.WrapLogrus(log))
 			if err != nil {
 				return err
 			}

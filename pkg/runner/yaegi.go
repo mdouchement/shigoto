@@ -1,12 +1,14 @@
 package runner
 
 import (
+	"os"
 	"reflect"
+	"strings"
 	"time"
 
-	"github.com/containous/yaegi/interp"
-	"github.com/containous/yaegi/stdlib"
 	"github.com/pkg/errors"
+	"github.com/traefik/yaegi/interp"
+	"github.com/traefik/yaegi/stdlib"
 )
 
 type yaegi struct {
@@ -70,6 +72,16 @@ func init() {
 		if !ok {
 			return nil, errors.New("taskfile: yaegi: src must be a string")
 		}
+
+		// Check if src is a file and not plain code.
+		if strings.HasSuffix(strings.TrimSpace(executor.src), ".go") {
+			src, err := os.ReadFile(executor.ctx.ExpandAll(executor.src))
+			if err != nil {
+				return nil, errors.Wrap(err, "taskfile: yaegi: file")
+			}
+			executor.src = string(src)
+		}
+
 		executor.src = executor.ctx.ExpandAll(executor.src)
 
 		// Ignore error
