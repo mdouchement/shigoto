@@ -7,10 +7,6 @@
 A nextgen crontab.
 It's a Golang alternative of crontab heavily inspired of [Taskfile](https://taskfile.dev) templating mechanism.
 
-## Requirements
-
-- Golang 1.13.x (Go Modules)
-
 
 ### Technologies / Frameworks
 
