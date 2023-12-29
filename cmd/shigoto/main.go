@@ -7,6 +7,7 @@ import (
 
 	"github.com/mdouchement/shigoto/cmd/shigoto/daemon"
 	"github.com/mdouchement/shigoto/cmd/shigoto/reload"
+	"github.com/mdouchement/shigoto/cmd/shigoto/run"
 	"github.com/mdouchement/shigoto/cmd/shigoto/validate"
 	"github.com/spf13/cobra"
 )
@@ -26,6 +27,7 @@ func main() {
 	}
 	c.AddCommand(daemon.Command)
 	c.AddCommand(reload.Command)
+	c.AddCommand(run.Command)
 	c.AddCommand(validate.Command)
 	c.AddCommand(&cobra.Command{
 		Use:   "version",
