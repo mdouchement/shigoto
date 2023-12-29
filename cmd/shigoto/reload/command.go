@@ -21,7 +21,7 @@ var (
 	// Command launches the deamon subcommand.
 	Command = &cobra.Command{
 		Use:   "reload",
-		Short: "Realod Shigoto service",
+		Short: "Reload Shigoto service",
 		Args:  cobra.NoArgs,
 		RunE: func(c *cobra.Command, _ []string) (err error) {
 			if cfg == "" {
