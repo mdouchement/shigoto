@@ -22,6 +22,18 @@ func (r *chain) Run() {
 
 	for _, runner := range r.runners {
 		runner.AttachLogger(r.log.WithField("chain", GenerateID()))
+
+		if runner.IsDeferrable() {
+			defer func(runner Runner) {
+				runner.Run()
+				if !runner.IsErrorIgnored() && runner.Error() != nil {
+					r.err = runner.Error()
+				}
+			}(runner)
+
+			continue
+		}
+
 		runner.Run()
 		if !runner.IsErrorIgnored() && runner.Error() != nil {
 			r.err = runner.Error()

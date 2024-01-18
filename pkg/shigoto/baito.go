@@ -8,6 +8,7 @@ import (
 	"github.com/mdouchement/shigoto/pkg/io"
 	"github.com/mdouchement/shigoto/pkg/runner"
 	"github.com/mdouchement/shigoto/pkg/templater"
+	"github.com/mdouchement/upathex"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
 )
@@ -76,13 +77,7 @@ func (b *Baito) Commands() []runner.Runner {
 // of the current environment variables. References to undefined
 // variables left as there are.
 func (b *Baito) ExpandEnv(str string) string {
-	str = os.Expand(str, func(k string) string {
-		if e, ok := b.FieldEnvironment[k]; ok {
-			return e
-		}
-
-		return fmt.Sprintf("${%s}", k)
-	})
+	str = upathex.ExpandEnvWithCustom(str, b.FieldEnvironment)
 	return os.ExpandEnv(str)
 }
 
@@ -91,7 +86,14 @@ func (b *Baito) ExpandVariables(str string) string {
 	return templater.New(b).Replace(str)
 }
 
+// ExpandTilde replaces the tilde prefix of a path by the current user home directory.
+// It also replaces `~mdouchement/' by the mdouchement home directory.
+func (b *Baito) ExpandTilde(str string) (string, error) {
+	return upathex.ExpandTilde(str)
+}
+
 // ExpandAll replace templatized variables and environment variables by their values.
+// It does not include ExpandTilde because it's used only for specific values.
 func (b *Baito) ExpandAll(str string) string {
 	s := b.ExpandVariables(str)
 	return b.ExpandEnv(s)
@@ -147,9 +149,11 @@ func (b *Baito) loadEnvironment(konf *koanf.Koanf) {
 	}
 }
 
-func (b *Baito) loadWorkdir(konf *koanf.Koanf) {
+func (b *Baito) loadWorkdir(konf *koanf.Koanf) (err error) {
 	path := fmt.Sprintf("%s.%s.workdir", entrypoint, b.FieldName)
 	b.FieldWorkdir = b.ExpandAll(konf.String(path))
+	b.FieldWorkdir, err = b.ExpandTilde(b.FieldWorkdir)
+	return err
 }
 
 func (b *Baito) loadSchedule(konf *koanf.Koanf) error {
@@ -173,11 +177,15 @@ func (b *Baito) loadLogsFile(konf *koanf.Koanf) (err error) {
 
 	logfile := konf.String(path)
 	if logfile == "" {
-		return
+		return nil
 	}
 	logfile = b.ExpandAll(logfile)
+	logfile, err = b.ExpandTilde(logfile)
+	if err != nil {
+		return err
+	}
 
-	b.FieldLogsFile, err = os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	b.FieldLogsFile, err = os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	return errors.Wrap(err, "could not create logs redirection file")
 }
 
@@ -187,7 +195,7 @@ func (b *Baito) loadCommands(konf *koanf.Koanf) error {
 		return errors.Errorf("%s: missing commands", path)
 	}
 
-	sl, ok := konf.Get(path).([]interface{})
+	sl, ok := konf.Get(path).([]any)
 	if !ok {
 		return errors.Errorf("%s: expected commands to be an array", path)
 	}
@@ -200,8 +208,8 @@ func (b *Baito) loadCommands(konf *koanf.Koanf) error {
 		switch v := command.(type) {
 		case string:
 			v = templater.Replace(v)
-			c, err = runner.Lookup(b, map[string]interface{}{"exec": v})
-		case map[string]interface{}:
+			c, err = runner.Lookup(b, map[string]any{"exec": v})
+		case map[string]any:
 			v = templater.ReplaceMapI(v)
 			c, err = runner.Lookup(b, v)
 		default:

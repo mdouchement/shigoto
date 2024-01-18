@@ -14,6 +14,7 @@ type (
 	// A Runner is the action to be executed.
 	Runner interface {
 		Run()
+		IsDeferrable() bool
 		Error() error
 		IsErrorIgnored() bool
 		AttachLogger(l logger.Logger)
@@ -25,13 +26,15 @@ type (
 		Environment() map[string]string
 		ExpandAll(string) string
 		ExpandVariables(string) string
+		ExpandTilde(string) (string, error)
+		Variables() map[string]string
 		Workdir() string
 		LogsFile() io.WriteSyncer
 	}
 
 	factory struct {
 		sync.Mutex
-		runners map[string]func(ctx Context, payload map[string]interface{}) (Runner, error)
+		runners map[string]func(ctx Context, payload map[string]any) (Runner, error)
 	}
 )
 
@@ -47,10 +50,10 @@ func GenerateID() string {
 }
 
 // Register registers a runner constructor.
-func Register(name string, fn func(ctx Context, payload map[string]interface{}) (Runner, error)) {
+func Register(name string, fn func(ctx Context, payload map[string]any) (Runner, error)) {
 	once.Do(func() {
 		runners = factory{
-			runners: make(map[string]func(ctx Context, payload map[string]interface{}) (Runner, error)),
+			runners: make(map[string]func(ctx Context, payload map[string]any) (Runner, error)),
 		}
 	})
 
@@ -61,10 +64,14 @@ func Register(name string, fn func(ctx Context, payload map[string]interface{}) 
 }
 
 // Lookup returns a new runner according given payload.
-func Lookup(ctx Context, payload map[string]interface{}) (Runner, error) {
+func Lookup(ctx Context, payload map[string]any) (Runner, error) {
 	runners.Lock()
 	defer runners.Unlock()
 
+	return lookup(ctx, payload)
+}
+
+func lookup(ctx Context, payload map[string]any) (Runner, error) {
 	for k := range payload {
 		if create, ok := runners.runners[k]; ok {
 			return create(ctx, payload)

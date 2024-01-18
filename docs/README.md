@@ -9,6 +9,8 @@
         - [1.2.2. HTTP](#122-http)
         - [1.2.3. Shell](#123-shell)
         - [1.2.4. Yaegi](#124-yaegi)
+        - [1.2.5. Defer](#125-defer)
+        - [1.2.6. Tengo](#126-tengo)
 
 <!-- /TOC -->
 
@@ -166,7 +168,7 @@ shigoto:
   baito_yaegi:
     schedule: "@every 5s"
     commands:
-      # Run a golang file compatible with Yaegi.
+      # Run a Golang file compatible with Yaegi.
       - yaegi: $HOME/main.go
         # IgnoreError allows errors and continue to the next command.
         # (default: false)
@@ -182,6 +184,70 @@ shigoto:
           func main() {
             logger.WithField("trololo", "popo").Info("Hello Yaegi")
           }
+        # IgnoreError allows errors and continue to the next command.
+        # (default: false)
+        ignore_error: true
+
+```
+
+### 1.2.5. Defer
+
+With the `defer` keyword, it's possible to schedule cleanup to be run once the non deferred commands are completed.
+The difference with just putting it as the last command is that this command will run even when the task fails.
+
+```yml
+shigoto:
+  baito_defer:
+    schedule: "@every 5s"
+    commands:
+      - defer: echo "defer 0"
+      - defer: { exec: echo "defer 1" }
+      - defer:
+          sh: echo "defer 2"
+      - echo "shigoto"
+
+```
+
+> Due to the nature of how the Go's own defer work, the deferred commands are executed in the reverse order if you schedule multiple of them.
+
+### 1.2.6. Tengo
+
+[Tengo](https://github.com/d5/tengo) allows to write Tengo scripts. It also uses extra libs/overwrites from [LDT](https://github.com/mdouchement/ldt).
+Special import is `logger` that use the Shigoto [logger](https://godoc.org/github.com/mdouchement/logger#Logger).
+
+- Supports global/local templating variables as source.
+- Supports host/global/local envrironment variables as source.
+
+```yml
+variables:
+  TENGO_LIST: |
+    [
+      "string 0",
+      "string 1",
+      "string 2"
+    ]
+
+shigoto:
+  baito_tengo:
+    schedule: "@every 5s"
+    commands:
+      # Run a Tengo file (*.tengo or *.tgo).
+      - tengo: ~/shigoto.tengo
+        # IgnoreError allows errors and continue to the next command.
+        # (default: false)
+        ignore_error: true
+      # Declare Tengo source code directly.
+      - tengo: |
+          fmt := import("fmt")
+
+          list := {{.TENGO_LIST}}
+          for v in list {
+            fmt.println(v)
+          }
+
+          log := shigoto.logger
+          log = log.with_prefix("[trololo]")
+          log.info("done")
         # IgnoreError allows errors and continue to the next command.
         # (default: false)
         ignore_error: true

@@ -11,11 +11,16 @@ type base struct {
 	ctx         Context
 	log         logger.Logger
 	ignoreError bool
+	deferrable  bool
 	err         error
 }
 
 func (r *base) IsErrorIgnored() bool {
 	return r.ignoreError
+}
+
+func (r *base) IsDeferrable() bool {
+	return r.deferrable
 }
 
 func (r *base) Error() error {

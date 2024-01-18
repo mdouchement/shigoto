@@ -15,7 +15,7 @@ type (
 		Replace(string) string
 		ReplaceSlice([]string) []string
 		ReplaceMap(map[string]string) map[string]string
-		ReplaceMapI(map[string]interface{}) map[string]interface{}
+		ReplaceMapI(map[string]any) map[string]any
 		Err() error
 	}
 
@@ -80,12 +80,12 @@ func (r *templater) ReplaceMap(m map[string]string) map[string]string {
 	return new
 }
 
-func (r *templater) ReplaceMapI(m map[string]interface{}) map[string]interface{} {
+func (r *templater) ReplaceMapI(m map[string]any) map[string]any {
 	if r.err != nil || len(m) == 0 {
 		return nil
 	}
 
-	new := make(map[string]interface{}, len(m))
+	new := make(map[string]any, len(m))
 	for k, v := range m {
 		if s, ok := v.(string); ok {
 			new[k] = r.Replace(s)

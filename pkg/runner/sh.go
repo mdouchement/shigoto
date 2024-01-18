@@ -32,7 +32,7 @@ func (r *sh) Run() {
 	//
 
 	start := time.Now()
-	logger := r.log.WithField("prefix", r.ctx.Name()).WithField("id", GenerateID())
+	logger := r.log.WithPrefixf("[%s]", r.ctx.Name()).WithField("id", GenerateID())
 	logger.Info(strings.Split(r.script, "\n")[0] + "...")
 	if r.redirect != nil {
 		defer r.redirect.Sync()
@@ -130,7 +130,7 @@ func init() {
 			}
 			path = executor.ctx.ExpandAll(path)
 
-			f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 			if err != nil {
 				return nil, errors.Wrap(err, "could not create logs redirection file")
 			}

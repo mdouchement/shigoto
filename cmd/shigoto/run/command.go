@@ -2,13 +2,14 @@ package run
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"regexp"
 	"slices"
 
 	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/pkg/runner"
 	"github.com/mdouchement/shigoto/pkg/shigoto"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -18,15 +19,15 @@ var Command = &cobra.Command{
 	Short: "Run (oneshot) the given shigoto file",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(_ *cobra.Command, args []string) error {
-		logrus := logrus.New()
-		logrus.SetFormatter(&logger.LogrusTextFormatter{
+		l := slog.New(logger.NewSlogTextHandler(os.Stdout, &logger.SlogTextOption{
+			Level:           slog.LevelInfo,
 			ForceColors:     true,
 			ForceFormatting: true,
 			PrefixRE:        regexp.MustCompile(`^(\[.*?\])\s`),
 			FullTimestamp:   true,
 			TimestampFormat: "2006-01-02 15:04:05",
-		})
-		log := logger.WrapLogrus(logrus)
+		}))
+		log := logger.WrapSlog(l)
 
 		//
 

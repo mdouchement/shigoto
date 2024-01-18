@@ -28,7 +28,7 @@ func (r *exec) Run() {
 	//
 
 	start := time.Now()
-	logger := r.log.WithField("prefix", r.ctx.Name()).WithField("id", GenerateID())
+	logger := r.log.WithPrefixf("[%s]", r.ctx.Name()).WithField("id", GenerateID())
 	logger.Info(r.cmd)
 	if r.redirect != nil {
 		defer r.redirect.Sync()
@@ -86,12 +86,13 @@ func (r *exec) buildCommand() error {
 }
 
 func init() {
-	Register("exec", func(ctx Context, payload map[string]interface{}) (Runner, error) {
+	Register("exec", func(ctx Context, payload map[string]any) (Runner, error) {
 		_, ok := payload["exec"]
 		if !ok {
 			return nil, errors.New("taskfile: exec: missing command value")
 		}
 
+		var err error
 		executor := &exec{
 			base: base{
 				ctx: ctx,
@@ -103,6 +104,10 @@ func init() {
 			return nil, errors.New("taskfile: exec: command must be a string")
 		}
 		executor.cmd = executor.ctx.ExpandAll(executor.cmd)
+		executor.cmd, err = executor.ctx.ExpandTilde(executor.cmd)
+		if err != nil {
+			return nil, errors.Wrap(err, "taskfile: exec: could not expand command")
+		}
 
 		// Ignore error
 		if v, ok := payload["ignore_error"]; ok {
@@ -121,10 +126,14 @@ func init() {
 				return nil, errors.New("taskfile: exec: redirect field must be a string")
 			}
 			path = executor.ctx.ExpandAll(path)
-
-			f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			path, err = executor.ctx.ExpandTilde(path)
 			if err != nil {
-				return nil, errors.Wrap(err, "could not create logs redirection file")
+				return nil, errors.Wrap(err, "taskfile: exec: could not expand logs redirection file path")
+			}
+
+			f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+			if err != nil {
+				return nil, errors.Wrap(err, "taskfile: exec: could not create logs redirection file")
 			}
 
 			executor.redirect = f
