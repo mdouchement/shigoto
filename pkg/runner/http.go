@@ -34,7 +34,7 @@ func (r *http) Run() {
 	//
 
 	start := time.Now()
-	logger := r.log.WithField("prefix", r.ctx.Name()).WithField("id", GenerateID())
+	logger := r.log.WithPrefixf("[%s]", r.ctx.Name()).WithField("id", GenerateID())
 	logger.Infof("%s %s", strings.ToUpper(r.method), r.url)
 	if r.ctx.LogsFile() != nil {
 		defer r.ctx.LogsFile().Sync()
@@ -83,7 +83,7 @@ func init() {
 		nethttp.MethodDelete: true,
 	}
 
-	Register("http", func(ctx Context, payload map[string]interface{}) (Runner, error) {
+	Register("http", func(ctx Context, payload map[string]any) (Runner, error) {
 		if _, ok := payload["http"]; !ok {
 			return nil, errors.New("taskfile: http: missing command http value")
 		}

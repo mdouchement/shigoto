@@ -28,7 +28,7 @@ func (r *yaegi) Run() {
 	//
 
 	start := time.Now()
-	logger := r.log.WithField("prefix", r.ctx.Name()).WithField("id", GenerateID())
+	logger := r.log.WithPrefixf("[%s]", r.ctx.Name()).WithField("id", GenerateID())
 	logger.Info("Running Yaegi script")
 	if r.ctx.LogsFile() != nil {
 		defer r.ctx.LogsFile().Sync()
@@ -97,7 +97,14 @@ func init() {
 
 		// Check if src is a file and not plain code.
 		if strings.HasSuffix(strings.TrimSpace(executor.src), ".go") {
-			src, err := os.ReadFile(executor.ctx.ExpandAll(executor.src))
+			executor.src = executor.ctx.ExpandAll(executor.src)
+			var err error
+			executor.src, err = executor.ctx.ExpandTilde(executor.src)
+			if !ok {
+				return nil, errors.Wrap(err, "taskfile: yaegi: expand filename")
+			}
+
+			src, err := os.ReadFile(executor.src)
 			if err != nil {
 				return nil, errors.Wrap(err, "taskfile: yaegi: file")
 			}
