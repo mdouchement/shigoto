@@ -4,7 +4,7 @@
 version: '3'
 
 vars:
-  VERSION: 0.4.0
+  VERSION: 0.4.1
   REVISION: { sh: git rev-parse HEAD }
 
 env:
@@ -17,11 +17,22 @@ tasks:
     cmds:
       - rm -rf ./dist
 
+  build-for-docker:
+    desc: Build for docker
+    cmds:
+      - task: clean
+      - mkdir -p dist
+      - task: build
+        vars:
+          BINARY_NAME: shigoto
+          ENTRYPOINT: cmd/shigoto/*.go
+          TARGET_DIST: ""
+
   build-all:
     desc: Build all binaries
     cmds:
       - task: clean
-      - mkdir -p ./dist
+      - mkdir -p dist
 
       - task: build
         vars:
