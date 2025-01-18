@@ -5,8 +5,8 @@ on:
 name: Build Release
 env:
   GO_VERSION: "~1"
-  TASK_VERSION: v3.11.0
-  TASK_SUM: 8284fa89367e0bbb8ba5dcb90baa6826b7669c4a317e5b9a46711f7380075e21
+  TASK_VERSION: v3.41.0
+  TASK_SUM: 0a2595f7fa3c15a62f8d0c244121a4977018b3bfdec7c1542ac2a8cf079978b8
 jobs:
   release:
     name: Build binaries
