@@ -2,6 +2,7 @@
 package templater
 
 import (
+	"maps"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -45,7 +46,5 @@ func init() {
 	taskFuncs["ExeExt"] = taskFuncs["exeExt"]
 
 	templateFuncs = sprig.TxtFuncMap()
-	for k, v := range taskFuncs {
-		templateFuncs[k] = v
-	}
+	maps.Copy(templateFuncs, taskFuncs)
 }

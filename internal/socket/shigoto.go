@@ -3,10 +3,9 @@ package socket
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"net"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 const (
@@ -33,11 +32,11 @@ func New(socket string) *Socket {
 func (s *Socket) Request(event []byte) ([]byte, error) {
 	c, err := net.DialUnix("unix", nil, &net.UnixAddr{Name: s.socket, Net: "unix"})
 	if err != nil {
-		return nil, errors.Wrap(err, "could not dial the socket")
+		return nil, fmt.Errorf("could not dial the socket: %w", err)
 	}
 	_, err = c.Write(append([]byte(event), ControlCharacter))
 	if err != nil {
-		return nil, errors.Wrap(err, "could not request the event")
+		return nil, fmt.Errorf("could not request the event: %w", err)
 	}
 
 	reader := bufio.NewReader(c)
@@ -52,7 +51,7 @@ func (s *Socket) Request(event []byte) ([]byte, error) {
 func (s *Socket) Listen(handler func(event []byte) []byte) error {
 	ln, err := net.ListenUnix("unix", &net.UnixAddr{Name: s.socket, Net: "unix"})
 	if err != nil {
-		return errors.Wrap(err, "could not open socket")
+		return fmt.Errorf("could not open socket: %w", err)
 	}
 	s.close = ln.Close
 

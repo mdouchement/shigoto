@@ -2,13 +2,13 @@ package runner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -88,7 +88,7 @@ func (r *sh) buildShell() (*interp.Runner, error) {
 }
 
 func init() {
-	Register("sh", func(ctx Context, payload map[string]interface{}) (Runner, error) {
+	Register("sh", func(ctx Context, payload map[string]any) (Runner, error) {
 		_, ok := payload["sh"]
 		if !ok {
 			return nil, errors.New("taskfile: sh: missing script value")
@@ -109,7 +109,7 @@ func init() {
 		var err error
 		executor.file, err = syntax.NewParser().Parse(strings.NewReader(executor.script), "")
 		if err != nil {
-			return nil, errors.Wrap(err, "taskfile: sh: parse script")
+			return nil, fmt.Errorf("taskfile: sh: parse script: %w", err)
 		}
 
 		// Ignore error
@@ -132,7 +132,7 @@ func init() {
 
 			f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 			if err != nil {
-				return nil, errors.Wrap(err, "could not create logs redirection file")
+				return nil, fmt.Errorf("could not create logs redirection file: %w", err)
 			}
 
 			executor.redirect = f

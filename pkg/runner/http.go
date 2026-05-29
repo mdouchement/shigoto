@@ -3,13 +3,14 @@ package runner
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"errors"
+	"fmt"
+	"io"
 	nethttp "net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/slok/goresilience"
 	"github.com/slok/goresilience/retry"
 )
@@ -58,7 +59,7 @@ func (r *http) Run() {
 		case resp.StatusCode < 400:
 			return nil
 		case resp.StatusCode >= 400:
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			logger.WithField("code", resp.StatusCode).WithField("status", resp.Status).Error(string(body))
 			return err
 		}
@@ -103,7 +104,7 @@ func init() {
 
 		requester.url, err = url.Parse(rawurl)
 		if err != nil {
-			return nil, errors.Wrap(err, "could not parse URL")
+			return nil, fmt.Errorf("could not parse URL: %w", err)
 		}
 
 		//
@@ -115,7 +116,7 @@ func init() {
 			}
 
 			if !supported[strings.ToUpper(method)] {
-				return nil, errors.Errorf("taskfile: http: unsupported method '%s'", method)
+				return nil, fmt.Errorf("taskfile: http: unsupported method '%s'", method)
 			}
 
 			requester.method = method
@@ -157,7 +158,7 @@ func init() {
 
 			config.WaitBase, err = time.ParseDuration(duration)
 			if err != nil {
-				return nil, errors.Wrap(err, "taskfile: http: retry_interval")
+				return nil, fmt.Errorf("taskfile: http: retry_interval: %w", err)
 			}
 		}
 		requester.retry = retry.New(config)

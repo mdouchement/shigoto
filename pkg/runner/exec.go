@@ -1,13 +1,13 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	osexec "os/exec"
 	"time"
 
 	"github.com/gobs/args"
-	"github.com/pkg/errors"
 )
 
 type exec struct {
@@ -106,7 +106,7 @@ func init() {
 		executor.cmd = executor.ctx.ExpandAll(executor.cmd)
 		executor.cmd, err = executor.ctx.ExpandTilde(executor.cmd)
 		if err != nil {
-			return nil, errors.Wrap(err, "taskfile: exec: could not expand command")
+			return nil, fmt.Errorf("taskfile: exec: could not expand command: %w", err)
 		}
 
 		// Ignore error
@@ -128,12 +128,12 @@ func init() {
 			path = executor.ctx.ExpandAll(path)
 			path, err = executor.ctx.ExpandTilde(path)
 			if err != nil {
-				return nil, errors.Wrap(err, "taskfile: exec: could not expand logs redirection file path")
+				return nil, fmt.Errorf("taskfile: exec: could not expand logs redirection file path: %w", err)
 			}
 
 			f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 			if err != nil {
-				return nil, errors.Wrap(err, "taskfile: exec: could not create logs redirection file")
+				return nil, fmt.Errorf("taskfile: exec: could not create logs redirection file: %w", err)
 			}
 
 			executor.redirect = f

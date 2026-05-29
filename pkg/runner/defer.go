@@ -1,10 +1,10 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/mdouchement/shigoto/pkg/templater"
-	"github.com/pkg/errors"
 )
 
 type deferrable struct {
@@ -55,10 +55,14 @@ func init() {
 			return nil, errors.New("invalid command format")
 		}
 
+		if err != nil {
+			return nil, fmt.Errorf("defer: %w", err)
+		}
+
 		if deferrable.runner == nil {
 			return nil, fmt.Errorf("defer: unknown runner for %v", payload)
 		}
 
-		return deferrable, errors.Wrap(err, "defer")
+		return deferrable, nil
 	})
 }

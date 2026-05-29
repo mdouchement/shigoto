@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -9,14 +10,13 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/v2"
 	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/internal/config"
 	"github.com/mdouchement/shigoto/internal/cron"
 	"github.com/mdouchement/shigoto/internal/socket"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -97,9 +97,9 @@ var (
 			pool.Start()
 			defer pool.Stop()
 
-			signals := make(chan os.Signal, 1)
-			signal.Notify(signals, os.Interrupt, os.Kill)
-			<-signals
+			ctx, cancel := signal.NotifyContext(c.Context(), os.Interrupt)
+			defer cancel()
+			<-ctx.Done()
 
 			return nil
 		},

@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/knadh/koanf"
+	"github.com/knadh/koanf/v2"
 	"github.com/mdouchement/shigoto/pkg/io"
 	"github.com/mdouchement/shigoto/pkg/runner"
 	"github.com/mdouchement/shigoto/pkg/templater"
 	"github.com/mdouchement/upathex"
-	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
 )
 
@@ -159,7 +158,7 @@ func (b *Baito) loadWorkdir(konf *koanf.Koanf) (err error) {
 func (b *Baito) loadSchedule(konf *koanf.Koanf) error {
 	path := fmt.Sprintf("%s.%s.schedule", entrypoint, b.FieldName)
 	if !konf.Exists(path) {
-		return errors.Errorf("%s: missing schedule", path)
+		return fmt.Errorf("%s: missing schedule", path)
 	}
 
 	s := &schedule{
@@ -169,7 +168,11 @@ func (b *Baito) loadSchedule(konf *koanf.Koanf) error {
 
 	var err error
 	s.Schedule, err = cron.ParseStandard(s.raw)
-	return errors.Wrap(err, path)
+	if err != nil {
+		return fmt.Errorf("%s: %w", path, err)
+	}
+
+	return nil
 }
 
 func (b *Baito) loadLogsFile(konf *koanf.Koanf) (err error) {
@@ -186,18 +189,22 @@ func (b *Baito) loadLogsFile(konf *koanf.Koanf) (err error) {
 	}
 
 	b.FieldLogsFile, err = os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
-	return errors.Wrap(err, "could not create logs redirection file")
+	if err != nil {
+		return fmt.Errorf("could not create logs redirection file: %w", err)
+	}
+
+	return nil
 }
 
 func (b *Baito) loadCommands(konf *koanf.Koanf) error {
 	path := fmt.Sprintf("%s.%s.commands", entrypoint, b.FieldName)
 	if !konf.Exists(path) {
-		return errors.Errorf("%s: missing commands", path)
+		return fmt.Errorf("%s: missing commands", path)
 	}
 
 	sl, ok := konf.Get(path).([]any)
 	if !ok {
-		return errors.Errorf("%s: expected commands to be an array", path)
+		return fmt.Errorf("%s: expected commands to be an array", path)
 	}
 
 	templater := templater.New(b)
@@ -213,11 +220,11 @@ func (b *Baito) loadCommands(konf *koanf.Koanf) error {
 			v = templater.ReplaceMapI(v)
 			c, err = runner.Lookup(b, v)
 		default:
-			return errors.Errorf("%s: invalid command format", path)
+			return fmt.Errorf("%s: invalid command format", path)
 		}
 
 		if err != nil {
-			return errors.Wrapf(err, "%s[%d]: load", path, i)
+			return fmt.Errorf("%s[%d]: load: %w", path, i, err)
 		}
 		b.FieldCommands = append(b.FieldCommands, c)
 	}

@@ -1,11 +1,11 @@
 package cron
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/mdouchement/logger"
 	"github.com/mdouchement/shigoto/pkg/shigoto"
-	"github.com/pkg/errors"
 )
 
 // Load loads all shigoto files from the given workdir and registers it to the given pool and starts them.
@@ -19,7 +19,7 @@ func Load(workdir string, pool *Pool, log logger.Logger) error {
 	for _, filename := range filenames {
 		shigoto, err := shigoto.Load(filename)
 		if err != nil {
-			return errors.Wrap(err, filepath.Base(filename))
+			return fmt.Errorf("%s: %w", filepath.Base(filename), err)
 		}
 
 		if len(shigoto.Baito) == 0 {
