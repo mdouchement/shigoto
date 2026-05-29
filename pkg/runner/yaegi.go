@@ -1,12 +1,13 @@
 package runner
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"reflect"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/traefik/yaegi/interp"
 	"github.com/traefik/yaegi/stdlib"
 	"github.com/traefik/yaegi/stdlib/unrestricted"
@@ -78,7 +79,7 @@ func (r *yaegi) Run() {
 }
 
 func init() {
-	Register("yaegi", func(ctx Context, payload map[string]interface{}) (Runner, error) {
+	Register("yaegi", func(ctx Context, payload map[string]any) (Runner, error) {
 		_, ok := payload["yaegi"]
 		if !ok {
 			return nil, errors.New("taskfile: yaegi: missing src value")
@@ -101,12 +102,12 @@ func init() {
 			var err error
 			executor.src, err = executor.ctx.ExpandTilde(executor.src)
 			if !ok {
-				return nil, errors.Wrap(err, "taskfile: yaegi: expand filename")
+				return nil, fmt.Errorf("taskfile: yaegi: expand filename: %w", err)
 			}
 
 			src, err := os.ReadFile(executor.src)
 			if err != nil {
-				return nil, errors.Wrap(err, "taskfile: yaegi: file")
+				return nil, fmt.Errorf("taskfile: yaegi: file: %w", err)
 			}
 			executor.src = string(src)
 		}

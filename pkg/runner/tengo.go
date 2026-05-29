@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -9,7 +11,6 @@ import (
 	"github.com/d5/tengo/v2/stdlib"
 	"github.com/mdouchement/ldt/pkg/tengolib"
 	"github.com/mdouchement/logger"
-	"github.com/pkg/errors"
 )
 
 type tengo struct {
@@ -52,7 +53,7 @@ func (r *tengo) Run() {
 }
 
 func init() {
-	Register("tengo", func(ctx Context, payload map[string]interface{}) (Runner, error) {
+	Register("tengo", func(ctx Context, payload map[string]any) (Runner, error) {
 		_, ok := payload["tengo"]
 		if !ok {
 			return nil, errors.New("taskfile: tengo: missing src value")
@@ -75,12 +76,12 @@ func init() {
 			var err error
 			executor.src, err = executor.ctx.ExpandTilde(executor.src)
 			if !ok {
-				return nil, errors.Wrap(err, "taskfile: tengo: expand filename")
+				return nil, fmt.Errorf("taskfile: tengo: expand filename: %w", err)
 			}
 
 			src, err := os.ReadFile(executor.src)
 			if err != nil {
-				return nil, errors.Wrap(err, "taskfile: tengo: file")
+				return nil, fmt.Errorf("taskfile: tengo: file: %w", err)
 			}
 			executor.src = string(src)
 		}

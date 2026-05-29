@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 	"reflect"
 
-	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/v2"
 )
 
 const (

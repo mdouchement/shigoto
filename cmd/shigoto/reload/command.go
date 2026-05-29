@@ -1,15 +1,15 @@
 package reload
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
-	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/v2"
 	"github.com/mdouchement/shigoto/internal/config"
 	"github.com/mdouchement/shigoto/internal/socket"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
