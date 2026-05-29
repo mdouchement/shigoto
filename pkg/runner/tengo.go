@@ -39,6 +39,7 @@ func (r *tengo) Run() {
 	modules.AddBuiltinModule("shigoto", map[string]tengopkg.Object{
 		"logger": withlogger(logger),
 	})
+	withEval(r, modules)
 
 	// Compile source code
 	script := tengopkg.NewScript([]byte(r.src))
@@ -75,7 +76,7 @@ func init() {
 			executor.src = executor.ctx.ExpandAll(executor.src)
 			var err error
 			executor.src, err = executor.ctx.ExpandTilde(executor.src)
-			if !ok {
+			if err != nil {
 				return nil, fmt.Errorf("taskfile: tengo: expand filename: %w", err)
 			}
 
@@ -436,6 +437,53 @@ func withlogger(logger logger.Logger) *tengopkg.ImmutableMap {
 					return tengopkg.UndefinedValue, nil
 				},
 			},
+		},
+	}
+}
+
+func withEval(executor *tengo, modules *tengopkg.ModuleMap) {
+	modules.GetBuiltinModule("shigoto").Attrs["eval"] = &tengopkg.UserFunction{
+		Name: "eval",
+		Value: func(args ...tengopkg.Object) (tengopkg.Object, error) {
+			if len(args) != 1 {
+				return nil, tengopkg.ErrWrongNumArguments
+			}
+
+			s1, ok := tengopkg.ToString(args[0])
+			if !ok {
+				return nil, tengopkg.ErrInvalidArgumentType{
+					Name:     "first",
+					Expected: "string(compatible)",
+					Found:    args[0].TypeName(),
+				}
+			}
+
+			if strings.HasSuffix(strings.TrimSpace(s1), ".tengo") || strings.HasSuffix(strings.TrimSpace(s1), ".tgo") {
+				s1 = executor.ctx.ExpandAll(s1)
+				var err error
+				s1, err = executor.ctx.ExpandTilde(s1)
+				if err != nil {
+					err = fmt.Errorf("tengo: expand filename: %w", err)
+					return tengolib.WrapError(err), nil
+				}
+
+				src, err := os.ReadFile(s1)
+				if err != nil {
+					err = fmt.Errorf("tengo: file: %w", err)
+					return tengolib.WrapError(err), nil
+				}
+				s1 = string(src)
+			}
+
+			s1 = "shigoto := import(\"shigoto\")\n" + s1 // Pre-import shigoto.
+
+			script := tengopkg.NewScript([]byte(s1))
+			script.SetImports(modules)
+			if _, err := script.Run(); err != nil {
+				return tengolib.WrapError(err), nil
+			}
+
+			return tengopkg.UndefinedValue, nil
 		},
 	}
 }

@@ -68,8 +68,8 @@ github.com/mattn/go-isatty v0.0.22/go.mod h1:ZXfXG4SQHsB/w3ZeOYbR0PrPwLy+n6xiMrJ
 github.com/mattn/go-runewidth v0.0.23 h1:7ykA0T0jkPpzSvMS5i9uoNn2Xy3R383f9HDx3RybWcw=
 github.com/mattn/go-runewidth v0.0.23/go.mod h1:XBkDxAl56ILZc9knddidhrOlY5R/pDhgLpndooCuJAs=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/mdouchement/ldt v0.9.2 h1:UbdapJADZhw8xiLmU+QQSom4wsBFpQkMbMWmlX662jo=
-github.com/mdouchement/ldt v0.9.2/go.mod h1:OqtUc49JnNlIBTDGKAuaGscpOn9S2a1AJP4OTrRbczY=
+github.com/mdouchement/ldt v0.10.0 h1:2HrkAlBN9TtOq6oF5Xh/dZh6B3CXSbwX6lnmHf6TLxs=
+github.com/mdouchement/ldt v0.10.0/go.mod h1:FmgRDGkkokJ40klcZvIK4tEtMpbAECmrB4SgPZ3BR6o=
 github.com/mdouchement/logger v0.0.0-20250429133203-f24114a58f5c h1:cx4jFpWyasgB2YhSGycZwrAXXVBtY8SIU4mLyxNc3+I=
 github.com/mdouchement/logger v0.0.0-20250429133203-f24114a58f5c/go.mod h1:dAvBIiMBwPFote4mO5jCdq9Kp2HzCWG5vEKGFAHUeLw=
 github.com/mdouchement/upathex v0.1.0 h1:kEEKDkHi05QyKrAs571YMWc5cwar3RsAmgv2Ucehm+A=

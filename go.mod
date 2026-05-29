@@ -10,7 +10,7 @@ require (
 	github.com/knadh/koanf/parsers/yaml v1.1.0
 	github.com/knadh/koanf/providers/file v1.2.1
 	github.com/knadh/koanf/v2 v2.3.4
-	github.com/mdouchement/ldt v0.9.2
+	github.com/mdouchement/ldt v0.10.0
 	github.com/mdouchement/logger v0.0.0-20250429133203-f24114a58f5c
 	github.com/mdouchement/upathex v0.1.0
 	github.com/robfig/cron/v3 v3.0.1
@@ -61,5 +61,4 @@ require (
 	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/term v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
